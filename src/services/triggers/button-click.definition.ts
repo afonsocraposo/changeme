@@ -1,5 +1,6 @@
 import type { NodeDefinition } from "../node-definitions/types";
 import {
+  booleanProperty,
   codeProperty,
   colorProperty,
   customProperty,
@@ -96,6 +97,12 @@ const definition = {
           "Additional CSS properties. For floating action button, use: bottom: 40; right: 40; (in pixels)",
         language: "text",
         height: 100,
+      }),
+      silentInjectFailure: booleanProperty({
+        label: "Fail Silently",
+        description:
+          "If button injection fails, do not show an error notification.",
+        defaultValue: false,
       }),
     },
   },

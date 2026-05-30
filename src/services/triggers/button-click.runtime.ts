@@ -17,6 +17,7 @@ interface ButtonClickTriggerConfig {
   buttonTextColor?: string;
   customStyle?: string;
   injectionPosition?: "start" | "end";
+  silentInjectFailure?: boolean;
 }
 interface ButtonClickTriggerOutput {
   componentType: string;
@@ -47,6 +48,7 @@ export class ButtonClickTrigger extends BaseTrigger<
       buttonTextColor,
       customStyle,
       injectionPosition,
+      silentInjectFailure,
     } = config;
     const componentConfig = {
       componentType,
@@ -78,9 +80,11 @@ export class ButtonClickTrigger extends BaseTrigger<
         }
 
         if (!targetElement) {
-          NotificationService.showErrorNotification({
-            message: "Target element not found for component injection",
-          });
+          if (!silentInjectFailure) {
+            NotificationService.showErrorNotification({
+              message: "Target element not found for component injection",
+            });
+          }
           return;
         }
 
