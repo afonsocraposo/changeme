@@ -9,3 +9,5 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare const __EXTENSION_TARGET__: "chrome" | "firefox" | "safari";

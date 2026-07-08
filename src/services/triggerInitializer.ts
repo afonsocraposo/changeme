@@ -6,17 +6,21 @@ import { KeyPressTrigger } from "./triggers/key-press.runtime";
 import { ButtonClickTrigger } from "./triggers/button-click.runtime";
 import { PopupTrigger } from "./triggers/popup.runtime";
 import HttpTrigger from "./triggers/http-trigger.runtime";
+import { getBrowserCapabilities } from "./browserCapabilities";
 
 // Initialize and register all triggers
 export function initializeTriggers(): void {
   const registry = TriggerRegistry.getInstance();
+  const capabilities = getBrowserCapabilities();
 
   // Register all built-in triggers
   registry.register(new PageLoadTrigger());
   registry.register(new ComponentLoadTrigger());
   registry.register(new DelayTrigger());
   registry.register(new KeyPressTrigger());
-  registry.register(new HttpTrigger());
+  if (capabilities.httpRequestTriggers) {
+    registry.register(new HttpTrigger());
+  }
   registry.register(new ButtonClickTrigger());
   registry.register(new PopupTrigger());
 }

@@ -6,12 +6,16 @@ import { WaitAction } from "./actions/wait.runtime";
 import { NavigateUrlAction } from "./actions/navigate-url.runtime";
 import { CookiesAction } from "./actions/cookies.runtime";
 import { OpenUrlAction } from "./actions/open-url.runtime";
+import { getBrowserCapabilities } from "./browserCapabilities";
 
 export function initializeBackgroundActions(): void {
   const registry = ActionRegistry.getInstance();
+  const capabilities = getBrowserCapabilities();
   // Actions to run in background
   registry.register(WaitAction);
-  registry.register(CustomScriptAction);
+  if (capabilities.userScripts) {
+    registry.register(CustomScriptAction);
+  }
   registry.register(NavigateUrlAction);
   registry.register(OpenUrlAction);
   registry.register(CookiesAction);

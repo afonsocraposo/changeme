@@ -1,5 +1,6 @@
 import { BaseAction, ActionMetadata } from "@/types/actions";
 import { ValidationResult } from "@/types/config-properties";
+import { getUnsupportedNodeMessage } from "./nodeDefinitionFilter";
 
 export class ActionRegistry {
   private static instance: ActionRegistry;
@@ -75,7 +76,10 @@ export class ActionRegistry {
   }> {
     const action = this.getAction(type);
     if (!action) {
-      throw new Error(`Action type '${type}' not found in registry`);
+      const unsupportedMessage = getUnsupportedNodeMessage("action", type);
+      throw new Error(
+        unsupportedMessage || `Action type '${type}' not found in registry`,
+      );
     }
 
     // Validate configuration before execution
@@ -131,9 +135,12 @@ export class ActionRegistry {
   validateConfig(type: string, config: Record<string, any>): ValidationResult {
     const action = this.getAction(type);
     if (!action) {
+      const unsupportedMessage = getUnsupportedNodeMessage("action", type);
       return {
         valid: false,
-        errors: { "": [`Action type '${type}' not found`] },
+        errors: {
+          "": [unsupportedMessage || `Action type '${type}' not found`],
+        },
       };
     }
 

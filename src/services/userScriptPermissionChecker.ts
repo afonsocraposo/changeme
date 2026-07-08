@@ -1,5 +1,6 @@
 import { sendMessageToBackground } from "@/lib/messages";
 import browser from "./browser";
+import { getExtensionTarget } from "./extensionTarget";
 
 export interface UserScriptPermissionStatus {
   available: boolean;
@@ -21,6 +22,10 @@ export class UserScriptPermissionChecker {
   }
 
   async checkPermissionStatus(): Promise<UserScriptPermissionStatus> {
+    if (getExtensionTarget() === "safari") {
+      return this.checkGenericFallback();
+    }
+
     const browser = this.detectBrowser();
 
     if (browser === "chrome") {
@@ -147,6 +152,10 @@ export class UserScriptPermissionChecker {
 
   // Method to request userScripts permission
   async requestUserScriptsPermission(): Promise<boolean> {
+    if (getExtensionTarget() === "safari") {
+      return false;
+    }
+
     try {
       const granted = await browser.permissions.request({
         permissions: ["userScripts" as any],

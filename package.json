@@ -8,6 +8,7 @@
     "dev:preview": "vite --mode preview",
     "dev:firefox": "TARGET=firefox vite build --watch",
     "build": "vite build",
+    "build:safari": "TARGET=safari vite build",
     "build:firefox": "TARGET=firefox vite build",
     "lint": "eslint src/ --ext .ts,.tsx",
     "lint:type-check": "tsc --noEmit",

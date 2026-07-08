@@ -30,6 +30,7 @@ import { OpenUrlAction } from "./actions/open-url.runtime";
 import { PasteClipboardAction } from "./actions/paste-clipboard.runtime";
 import { SelectElementAction } from "./actions/select-element.runtime";
 import { SaveFileAction } from "./actions/save-file.runtime";
+import { getBrowserCapabilities } from "./browserCapabilities";
 
 // Initialize and register all actions
 export function initializeActions(): void {
@@ -42,6 +43,7 @@ export function initializeActions(): void {
     return;
   }
   const registry = ActionRegistry.getInstance();
+  const capabilities = getBrowserCapabilities();
 
   // Actions to run in the content
   registry.register(CopyContentAction);
@@ -51,7 +53,9 @@ export function initializeActions(): void {
   registry.register(ShowNotificationAction);
   registry.register(InjectComponentAction);
   registry.register(InjectStyleAction);
-  registry.register(CustomScriptAction);
+  if (capabilities.userScripts) {
+    registry.register(CustomScriptAction);
+  }
   registry.register(AIAction);
   registry.register(LLMOpenAIAction);
   registry.register(HttpRequestAction);

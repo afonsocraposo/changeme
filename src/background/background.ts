@@ -10,10 +10,12 @@ import browser from "@/services/browser";
 import { ApiClient } from "@/api/client";
 import { WorkflowSyncer } from "@/services/workflowSyncer";
 import { ChatbotService } from "../services/chatbot";
+import { getBrowserCapabilities } from "@/services/browserCapabilities";
 
 let httpListener: HttpListenerWebRequest | null = null;
+const capabilities = getBrowserCapabilities();
 
-if (browser.webRequest.onBeforeRequest) {
+if (capabilities.httpRequestTriggers && browser.webRequest.onBeforeRequest) {
   try {
     httpListener = HttpListenerWebRequest.getInstance();
     console.debug(
@@ -25,7 +27,7 @@ if (browser.webRequest.onBeforeRequest) {
       error,
     );
   }
-} else {
+} else if (capabilities.httpRequestTriggers) {
   console.error("Background: webRequest.onBeforeRequest not available");
 }
 
