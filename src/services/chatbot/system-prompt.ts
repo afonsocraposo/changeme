@@ -1,17 +1,17 @@
 import { ExecutionMetadataKeys, WorkflowDefinition } from "@/types/workflow";
-import { nodeCatalog } from "../nodeCatalog";
+import { actionCatalog, triggerCatalog } from "../nodeCatalog";
 
 interface SystemPromptProps {
   workflow: WorkflowDefinition;
 }
 
 const availableNodeTypes = {
-  actions: Object.values(nodeCatalog.actions).map((node) => ({
+  actions: Object.values(actionCatalog).map((node) => ({
     type: node.metadata.type,
     label: node.metadata.label,
     description: node.metadata.description,
   })),
-  triggers: Object.values(nodeCatalog.triggers).map((node) => ({
+  triggers: Object.values(triggerCatalog).map((node) => ({
     type: node.metadata.type,
     label: node.metadata.label,
     description: node.metadata.description,

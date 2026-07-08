@@ -1,5 +1,6 @@
 import { ValidationResult } from "@/types/config-properties";
 import { BaseTrigger, TriggerCleanup, TriggerMetadata } from "@/types/triggers";
+import { getUnsupportedNodeMessage } from "./nodeDefinitionFilter";
 
 export class TriggerRegistry {
   private static instance: TriggerRegistry;
@@ -63,7 +64,10 @@ export class TriggerRegistry {
   ): Promise<void> {
     const trigger = this.getTrigger(type);
     if (!trigger) {
-      throw new Error(`Trigger type '${type}' not found in registry`);
+      const unsupportedMessage = getUnsupportedNodeMessage("trigger", type);
+      throw new Error(
+        unsupportedMessage || `Trigger type '${type}' not found in registry`,
+      );
     }
 
     // Validate configuration before setup
@@ -98,9 +102,12 @@ export class TriggerRegistry {
   validateConfig(type: string, config: Record<string, any>): ValidationResult {
     const trigger = this.getTrigger(type);
     if (!trigger) {
+      const unsupportedMessage = getUnsupportedNodeMessage("trigger", type);
       return {
         valid: false,
-        errors: { "": [`Trigger type '${type}' not found`] },
+        errors: {
+          "": [unsupportedMessage || `Trigger type '${type}' not found`],
+        },
       };
     }
 

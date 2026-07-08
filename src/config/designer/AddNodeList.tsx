@@ -1,5 +1,5 @@
 import NodeIcon from "@/components/NodeIcon";
-import { nodeCatalog } from "@/services/nodeCatalog";
+import { actionCatalog, triggerCatalog } from "@/services/nodeCatalog";
 import { NodeType } from "@/types/workflow";
 import {
   ActionIcon,
@@ -45,13 +45,13 @@ export default function AddNodeList({
 
   const fullCategories = useMemo(() => {
     return {
-      trigger: Object.values(nodeCatalog.triggers).map((entry) => ({
+      trigger: Object.values(triggerCatalog).map((entry) => ({
         type: entry.metadata.type,
         label: entry.metadata.label,
         icon: entry.metadata.icon,
         description: entry.metadata.description,
       })),
-      action: Object.values(nodeCatalog.actions).map((entry) => ({
+      action: Object.values(actionCatalog).map((entry) => ({
         type: entry.metadata.type,
         label: entry.metadata.label,
         icon: entry.metadata.icon,

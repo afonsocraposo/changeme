@@ -1,6 +1,7 @@
 import { sendMessageToContentScript } from "@/lib/messages";
 import {
   CleanupWorkflowTriggersCommand,
+  StatusMessage,
   TriggerCommand,
   WorkflowCommandType,
 } from "@/types/background-workflow";
@@ -15,6 +16,7 @@ import { matchesUrlPattern } from "@/utils/helpers";
 import { initializeCredentials } from "./credentialInitializer";
 import { useStore } from "@/store";
 import { initializeBackgroundActions } from "./backgroundActionInitializer";
+import { assertTriggerInitializationSucceeded } from "./triggerSetupGuard";
 
 export class BackgroundWorkflowEngine {
   private activeExecutors = new Map<string, WorkflowExecutor>();
@@ -357,11 +359,12 @@ export class BackgroundWorkflowEngine {
         nodeId: node.id,
       };
 
-      await sendMessageToContentScript(
+      const response = await sendMessageToContentScript<TriggerCommand>(
         tabId,
         WorkflowCommandType.INIT_TRIGGER,
         message,
       );
+      assertTriggerInitializationSucceeded(response as StatusMessage | null);
     } catch (error) {
       console.error("Error setting up trigger:", error);
     }

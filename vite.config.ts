@@ -4,17 +4,27 @@ import webExtension from "vite-plugin-web-extension";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { getBuildOutputDir } from "./src/services/buildTargetConfig";
+import { buildExtensionManifest } from "./src/services/manifestBuilder";
 
 export default defineConfig(({ command }) => {
   const isDev = command === "serve";
   const port = 5173;
   const isFirefox = process.env.TARGET === "firefox";
+  const target = process.env.TARGET === "safari"
+    ? "safari"
+    : isFirefox
+      ? "firefox"
+      : "chrome";
 
   return {
+    define: {
+      __EXTENSION_TARGET__: JSON.stringify(target),
+    },
     plugins: [
       react(),
       webExtension({
-        browser: process.env.TARGET || "chrome",
+        browser: target,
         disableAutoLaunch: true,
         manifest: () => {
           const manifest = JSON.parse(
@@ -23,32 +33,12 @@ export default defineConfig(({ command }) => {
           const packageJson = JSON.parse(
             readFileSync(resolve(__dirname, "package.json"), "utf-8"),
           );
-          manifest.version = packageJson.version;
-
-          // Firefox uses background.scripts instead of service_worker in MV3
-          if (isFirefox) {
-            manifest.background = {
-              scripts: ["src/background/background.ts"],
-              type: "module",
-            };
-            // remove userScripts from permissions in Firefox
-            manifest.permissions = manifest.permissions.filter(
-              (perm: string) => perm !== "userScripts",
-            );
-            manifest.optional_permissions = [
-              ...(manifest.optional_permissions || []),
-              "userScripts",
-            ];
-          }
-
-          // Add CSP for development to allow Vite HMR (Chrome only)
-          if (isDev && !isFirefox) {
-            manifest.content_security_policy = {
-              extension_pages: `${manifest.content_security_policy?.extension_pages ?? ""} script-src 'self' http://localhost:${port}; object-src 'self'`,
-            };
-          }
-
-          return manifest;
+          return buildExtensionManifest(manifest, {
+            target,
+            isDev,
+            version: packageJson.version,
+            port,
+          });
         },
         watchFilePaths: ["src", "public", "icons", "manifest.json"],
         additionalInputs: ["src/config/index.html", "src/style.css"],
@@ -84,7 +74,7 @@ export default defineConfig(({ command }) => {
       tsconfigPaths(),
     ],
     build: {
-      outDir: "dist",
+      outDir: getBuildOutputDir(target),
       rollupOptions: {
         output: {
           inlineDynamicImports: false,
